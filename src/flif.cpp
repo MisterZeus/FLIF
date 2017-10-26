@@ -50,10 +50,6 @@
 #define strcasecmp _stricmp
 #endif
 
-
-
-
-
 // planes:
 // 0    Y channel (luminance)
 // 1    I (chroma)
@@ -122,16 +118,12 @@ void show_help(int mode) {
     v_printf(1,"   -f, --fit=WxH              lossy downscaled image to exactly WxH\n");
     v_printf(2,"   -b, --breakpoints          report breakpoints (truncation offsets) for truncations at scales 1:8, 1:4, 1:2\n");
     }
-}
-
-
-bool file_exists(const char * filename){
+}bool file_exists(const char * filename){
         FILE * file = fopen(filename, "rb");
         if (!file) return false;
         fclose(file);
         return true;
-}
-bool file_is_flif(const char * filename){
+}bool file_is_flif(const char * filename){
         FILE * file = fopen(filename, "rb");
         if (!file) return false;
         char buff[5];
@@ -140,11 +132,7 @@ bool file_is_flif(const char * filename){
         else if (strcmp(buff,"FLIF") && strcmp(buff,"!<ar")) result=false;  // assuming that it might be a FLIF file if it looks like an ar
         fclose(file);
         return result;
-}
-
-
-
-void show_banner() {
+}void show_banner() {
     v_printf(3,"  ____ _(_)____\n");
     v_printf(3," (___ | | | ___)   ");v_printf(2,"FLIF (Free Lossless Image Format) 0.3 [28 April 2017]\n");
     v_printf(3,"  (__ | |_| __)    ");v_printf(3,"Copyright (C) 2017 Jon Sneyers and Pieter Wuille\n");
@@ -166,9 +154,7 @@ void show_banner() {
 #ifndef FAST_BUT_WORSE_COMPRESSION
     v_printf(2,"Non-default compile-option: SLOWER, BETTER COMPRESSION (CANNOT ENCODE/DECODE NORMAL FLIF FILES!)\n");
 #endif
-}
-
-bool check_compatible_extension (char *ext) {
+}bool check_compatible_extension (char *ext) {
     if (!(ext && ( !strcasecmp(ext,".png") // easy to add or remove formats
                   || !strcasecmp(ext,".pnm")
                   || !strcasecmp(ext,".ppm")
@@ -182,8 +168,7 @@ bool check_compatible_extension (char *ext) {
     } else {
         return true;
     }
-}
-bool check_metadata_extension (char *ext) {
+}bool check_metadata_extension (char *ext) {
     if (!(ext && (
                    !strcasecmp(ext,".icc")
                 || !strcasecmp(ext,".xmp")
@@ -193,10 +178,7 @@ bool check_metadata_extension (char *ext) {
     } else {
         return true;
     }
-}
-
-
-#ifdef HAS_ENCODER
+}#ifdef HAS_ENCODER
 
 bool encode_load_input_images(int argc, char **argv, Images &images, flif_options &options) {
     int nb_input_images = argc-1;
@@ -267,8 +249,7 @@ bool encode_load_input_images(int argc, char **argv, Images &images, flif_option
     if (nb_actual_images > 0) return true;
     e_printf("Error: no actual input images to be encoded!\n");
     return false;
-}
-bool encode_flif(int argc, char **argv, Images &images, flif_options &options) {
+}bool encode_flif(int argc, char **argv, Images &images, flif_options &options) {
     bool flat=true;
     unsigned int framenb=0;
     for (Image& i : images) { i.frame_delay = options.frame_delay[framenb]; if (framenb+1 < options.frame_delay.size()) framenb++; }
@@ -350,16 +331,13 @@ bool encode_flif(int argc, char **argv, Images &images, flif_options &options) {
     // get rid of palette
     images[0].clear();
     return result;
-}
-
-bool handle_encode(int argc, char **argv, Images &images, flif_options &options) {
+}bool handle_encode(int argc, char **argv, Images &images, flif_options &options) {
     if (!encode_load_input_images(argc,argv,images,options)) return false;
     if (!options.alpha_zero_special) for (Image& i : images) i.alpha_zero_special = false;
     argv += (argc-1);
     argc = 1;
     return encode_flif(argc, argv, images, options);
-}
-#endif
+}#endif
 
 bool decode_flif(char **argv, Images &images, flif_options &options) {
     FILE *file = NULL;
@@ -372,9 +350,7 @@ bool decode_flif(char **argv, Images &images, flif_options &options) {
     md.xmp = options.metadata;
     md.exif = options.metadata;
     return flif_decode(fio, images, options, md);
-}
-
-int handle_decode(int argc, char **argv, Images &images, flif_options &options) {
+}int handle_decode(int argc, char **argv, Images &images, flif_options &options) {
     if (options.scale < 0) {
         // just identify the file(s), don't actually decode
         while (argc>0) {
@@ -456,10 +432,8 @@ int handle_decode(int argc, char **argv, Images &images, flif_options &options) 
     images[0].clear();
     v_printf(2,"\n");
     return 0;
-}
-int main(int argc, char **argv)
-{
-    Images images;
+}int main(int argc, char **argv)
+{    Images images;
     flif_options options = FLIF_DEFAULT_OPTIONS;
 #ifdef HAS_ENCODER
     int mode = -1; // 0 = encode, 1 = decode, 2 = transcode
@@ -767,4 +741,3 @@ int main(int argc, char **argv)
 #endif
     return 0;
 }
-
